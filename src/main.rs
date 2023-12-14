@@ -54,10 +54,7 @@ fn run_prompt() {
 
             match run(line) {
                 Ok(_) => {}
-                Err(e) => {
-                    e.report();
-                    exit(65);
-                }
+                Err(_) => {}
             }
         } else {
             break;

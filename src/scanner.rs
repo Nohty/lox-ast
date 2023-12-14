@@ -24,18 +24,26 @@ impl Scanner {
     }
 
     pub fn scan_tokens(&mut self) -> Result<&Vec<Token>, LoxError> {
+        let mut had_error: Option<LoxError> = None;
+
         while !self.is_at_end() {
             self.start = self.current;
 
             match self.scan_token() {
                 Ok(_) => {}
-                Err(e) => e.report(),
+                Err(e) => {
+                    e.report();
+                    had_error = Some(e);
+                }
             }
         }
 
         self.tokens.push(Token::eof(self.line));
 
-        Ok(&self.tokens)
+        match had_error {
+            Some(e) => Err(e),
+            None => Ok(&self.tokens),
+        }
     }
 
     fn is_at_end(&self) -> bool {
@@ -56,6 +64,34 @@ impl Scanner {
             '+' => self.add_token(TokenType::Plus),
             ';' => self.add_token(TokenType::Semicolon),
             '*' => self.add_token(TokenType::Star),
+            '!' => {
+                if self.is_match('=') {
+                    self.add_token(TokenType::BangEqual)
+                } else {
+                    self.add_token(TokenType::Bang)
+                }
+            }
+            '=' => {
+                if self.is_match('=') {
+                    self.add_token(TokenType::EqualEqual)
+                } else {
+                    self.add_token(TokenType::Equal)
+                }
+            }
+            '<' => {
+                if self.is_match('=') {
+                    self.add_token(TokenType::LessEqual)
+                } else {
+                    self.add_token(TokenType::Less)
+                }
+            }
+            '>' => {
+                if self.is_match('=') {
+                    self.add_token(TokenType::GreaterEqual)
+                } else {
+                    self.add_token(TokenType::Greater)
+                }
+            }
             _ => return Err(LoxError::new(self.line, "Unexpected character".to_string())),
         }
 
@@ -77,5 +113,14 @@ impl Scanner {
         let lexeme = self.source[self.start..self.current].iter().collect();
         self.tokens
             .push(Token::new(ttype, lexeme, literal, self.line))
+    }
+
+    fn is_match(&mut self, expected: char) -> bool {
+        if let Some(c) = self.source.get(self.current) {
+            self.current += 1;
+            return *c == expected;
+        }
+
+        return false;
     }
 }
