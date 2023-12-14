@@ -107,6 +107,7 @@ impl Scanner {
             }
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
+            '"' => self.string()?,
             _ => return Err(LoxError::new(self.line, "Unexpected character".to_string())),
         }
 
@@ -143,5 +144,30 @@ impl Scanner {
 
     fn peek(&self) -> Option<char> {
         self.source.get(self.current).copied()
+    }
+
+    fn string(&mut self) -> Result<(), LoxError> {
+        while let Some(c) = self.peek() {
+            match c {
+                '"' => break,
+                '\n' => self.line += 1,
+                _ => {}
+            }
+
+            self.advance();
+        }
+
+        if self.is_at_end() {
+            return Err(LoxError::new(self.line, "Unterminated string".to_string()));
+        }
+
+        self.advance();
+
+        let value: String = self.source[self.start + 1..self.current - 1]
+            .iter()
+            .collect();
+        self.add_token_literal(TokenType::String, Some(Literal::Str(value)));
+
+        Ok(())
     }
 }
