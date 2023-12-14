@@ -20,7 +20,7 @@ fn main() {
         println!("Usage: lax-ast [file]");
         exit(64)
     } else if args.len() == 2 {
-        run_file(&args[0]).expect("Error running file")
+        run_file(&args[1]).expect("Error running file")
     } else {
         run_prompt();
     }
@@ -31,10 +31,7 @@ fn run_file(path: &str) -> io::Result<()> {
 
     match run(buf) {
         Ok(_) => {}
-        Err(e) => {
-            e.report();
-            exit(65);
-        }
+        Err(_) => exit(65),
     }
 
     Ok(())

@@ -94,13 +94,19 @@ impl Scanner {
             }
             '/' => {
                 if self.is_match('/') {
-                    while self.peek() != '\n' && !self.is_at_end() {
-                        self.advance();
+                    while let Some(c) = self.peek() {
+                        if c != '\n' {
+                            self.advance();
+                        } else {
+                            break;
+                        }
                     }
                 } else {
                     self.add_token(TokenType::Slash)
                 }
             }
+            ' ' | '\r' | '\t' => {}
+            '\n' => self.line += 1,
             _ => return Err(LoxError::new(self.line, "Unexpected character".to_string())),
         }
 
@@ -135,11 +141,7 @@ impl Scanner {
         return false;
     }
 
-    fn peek(&self) -> char {
-        if let Some(c) = self.source.get(self.current) {
-            return *c;
-        }
-
-        return '\0';
+    fn peek(&self) -> Option<char> {
+        self.source.get(self.current).copied()
     }
 }
