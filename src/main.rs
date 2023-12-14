@@ -6,7 +6,7 @@ mod token_type;
 use std::{
     env::args,
     fs::read_to_string,
-    io::{self, stdin, BufRead},
+    io::{self, stdin, stdout, BufRead, Write},
     process::exit,
 };
 
@@ -44,6 +44,7 @@ fn run_prompt() {
     let stdin = stdin();
 
     print!("> ");
+    stdout().flush().unwrap();
 
     for line in stdin.lock().lines() {
         if let Ok(line) = line {
@@ -61,6 +62,9 @@ fn run_prompt() {
         } else {
             break;
         }
+
+        print!("> ");
+        stdout().flush().unwrap();
     }
 }
 
