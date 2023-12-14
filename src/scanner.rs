@@ -92,17 +92,26 @@ impl Scanner {
                     self.add_token(TokenType::Greater)
                 }
             }
+            '/' => {
+                if self.is_match('/') {
+                    while self.peek() != '\n' && !self.is_at_end() {
+                        self.advance();
+                    }
+                } else {
+                    self.add_token(TokenType::Slash)
+                }
+            }
             _ => return Err(LoxError::new(self.line, "Unexpected character".to_string())),
         }
 
         Ok(())
     }
 
-    fn advance(&mut self) -> &char {
+    fn advance(&mut self) -> char {
         let result = self.source.get(self.current).unwrap();
         self.current += 1;
 
-        return result;
+        return *result;
     }
 
     fn add_token(&mut self, ttype: TokenType) {
@@ -117,10 +126,20 @@ impl Scanner {
 
     fn is_match(&mut self, expected: char) -> bool {
         if let Some(c) = self.source.get(self.current) {
-            self.current += 1;
-            return *c == expected;
+            if *c == expected {
+                self.current += 1;
+                return true;
+            }
         }
 
         return false;
+    }
+
+    fn peek(&self) -> char {
+        if let Some(c) = self.source.get(self.current) {
+            return *c;
+        }
+
+        return '\0';
     }
 }
