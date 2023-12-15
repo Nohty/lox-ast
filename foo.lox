@@ -1,0 +1,11 @@
+()
+
+/* this is a block comment
+ * it can span multiple lines
+ * and is used to describe the function
+ * and its parameters
+ */
+
+// this is a single line comment
+
+/* testing the comment */ {} /*block nest 1 /* block nest 2 */ end block 1 */ + 1
