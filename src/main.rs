@@ -29,9 +29,8 @@ fn main() {
 fn run_file(path: &str) -> io::Result<()> {
     let buf = read_to_string(path)?;
 
-    match run(buf) {
-        Ok(_) => {}
-        Err(_) => exit(65),
+    if let Err(_) = run(buf) {
+        exit(65);
     }
 
     Ok(())
