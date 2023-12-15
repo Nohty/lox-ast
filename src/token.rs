@@ -55,7 +55,7 @@ impl Display for Token {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match &self.literal {
             Some(lit) => write!(f, "{:?} {} {}", self.ttype, self.lexeme, lit),
-            None => write!(f, "{:?} {} {}", self.ttype, self.lexeme, "None"),
+            None => write!(f, "{:?} {} None", self.ttype, self.lexeme),
         }
     }
 }

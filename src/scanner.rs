@@ -122,7 +122,7 @@ impl Scanner {
         let result = self.source.get(self.current).unwrap();
         self.current += 1;
 
-        return *result;
+        *result
     }
 
     fn add_token(&mut self, ttype: TokenType) {
@@ -143,7 +143,7 @@ impl Scanner {
             }
         }
 
-        return false;
+        false
     }
 
     fn peek(&self) -> Option<char> {

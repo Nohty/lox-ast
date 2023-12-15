@@ -29,7 +29,7 @@ fn main() {
 fn run_file(path: &str) -> io::Result<()> {
     let buf = read_to_string(path)?;
 
-    if let Err(_) = run(buf) {
+    if run(buf).is_err() {
         exit(65);
     }
 
