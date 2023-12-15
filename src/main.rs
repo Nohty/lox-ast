@@ -48,10 +48,7 @@ fn run_prompt() {
                 break;
             }
 
-            match run(line) {
-                Ok(_) => {}
-                Err(_) => {}
-            }
+            let _ = run(line);
         } else {
             break;
         }
