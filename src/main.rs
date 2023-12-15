@@ -16,13 +16,13 @@ use scanner::Scanner;
 fn main() {
     let args: Vec<String> = args().collect();
 
-    if args.len() > 2 {
-        println!("Usage: lax-ast [file]");
-        exit(64)
-    } else if args.len() == 2 {
-        run_file(&args[1]).expect("Error running file")
-    } else {
-        run_prompt();
+    match args.len() {
+        1 => run_prompt(),
+        2 => run_file(&args[1]).expect("Error running file"),
+        _ => {
+            println!("Usage: lax-ast [file]");
+            exit(64);
+        }
     }
 }
 
