@@ -101,6 +101,8 @@ impl Scanner {
                             break;
                         }
                     }
+                } else if self.is_match('*') {
+                    self.scan_block_comment()?;
                 } else {
                     self.add_token(TokenType::Slash)
                 }
@@ -229,6 +231,36 @@ impl Scanner {
             "while" => Some(TokenType::While),
             _ => None,
         }
+    }
+
+    fn scan_block_comment(&mut self) -> Result<(), LoxError> {
+        let mut depth = 1;
+
+        while depth > 0 {
+            if self.is_at_end() {
+                return Err(LoxError::new(
+                    self.line,
+                    "Unterminated block comment".to_string(),
+                ));
+            }
+
+            match self.advance() {
+                '/' => {
+                    if self.is_match('*') {
+                        depth += 1;
+                    }
+                }
+                '*' => {
+                    if self.is_match('/') {
+                        depth -= 1;
+                    }
+                }
+                '\n' => self.line += 1,
+                _ => {}
+            }
+        }
+
+        Ok(())
     }
 
     fn is_digit(c: Option<char>) -> bool {
