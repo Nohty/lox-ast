@@ -108,6 +108,7 @@ impl Scanner {
             ' ' | '\r' | '\t' => {}
             '\n' => self.line += 1,
             '"' => self.string()?,
+            '0'..='9' => self.number(),
             _ => return Err(LoxError::new(self.line, "Unexpected character".to_string())),
         }
 
@@ -169,5 +170,35 @@ impl Scanner {
         self.add_token_literal(TokenType::String, Some(Literal::Str(value)));
 
         Ok(())
+    }
+
+    fn number(&mut self) {
+        while Scanner::is_digit(self.peek()) {
+            self.advance();
+        }
+
+        if self.peek() == Some('.') && Scanner::is_digit(self.peek_next()) {
+            self.advance();
+
+            while Scanner::is_digit(self.peek()) {
+                self.advance();
+            }
+        }
+
+        let value: String = self.source[self.start..self.current].iter().collect();
+        let number = value.parse::<f64>().unwrap();
+
+        self.add_token_literal(TokenType::Number, Some(Literal::Num(number)));
+    }
+
+    fn is_digit(c: Option<char>) -> bool {
+        match c {
+            Some(c) => c.is_ascii_digit(),
+            None => false,
+        }
+    }
+
+    fn peek_next(&self) -> Option<char> {
+        self.source.get(self.current + 1).copied()
     }
 }
